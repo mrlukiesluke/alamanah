@@ -2,7 +2,8 @@
   "@@locale": "en",
   "hello": "Hello",
   "welcome": "Welcome to the app",
-  "home" : "Home",
+  "home": "Home",
   "profile": "Profile",
-  "history": "History"
+  "history": "History",
+  "settings": "Settings"
 }

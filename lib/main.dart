@@ -1,5 +1,5 @@
 import 'package:alamanah/l10n/app_localizations.dart';
-import 'package:alamanah/mobile_pages/language_switcher.dart';
+import 'package:alamanah/navigation_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: LanguageSwitcher(onLocaleChange: _changeLanguage),
+      home: NavigationPage(onLocaleChange: _changeLanguage),
     );
   }
 }
