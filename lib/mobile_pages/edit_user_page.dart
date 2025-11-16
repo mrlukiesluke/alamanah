@@ -281,12 +281,22 @@ class _EditUserPageState extends State<EditUserPage> {
 
               const SizedBox(height: 30),
 
-              _isSaving
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: saveUser,
-                      child: const Text("Save"),
-                    ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _isSaving
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: saveUser,
+                          child: const Text("Save"),
+                        ),
+                  SizedBox(width: 30),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context), // Cancel
+                    child: const Text('Cancel'),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

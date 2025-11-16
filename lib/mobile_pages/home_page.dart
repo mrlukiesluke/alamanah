@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late Future<List<User>> _futureUsers;
   String searchQuery = '';
+  List<User> users = [];
 
   @override
   void initState() {
@@ -35,23 +36,60 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-    Future<void> _refreshUsers() async {
+  Future<void> _refreshUsers() async {
     setState(() {
       _futureUsers = MongoDatabase.getUsers();
     });
   }
 
-    void _editUser(User user, int index) async {
+  // void _editUser(User user, int index) async {
+  //   final updatedUser = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => EditUserPage(user: user)),
+  //   );
+
+  //   if (updatedUser != null && updatedUser is User) {
+  //     // 👇 Update MongoDB
+  //     await MongoDatabase.updateUser(updatedUser);
+
+  //     // 👇 Refresh UI
+  //     setState(() {
+  //       _futureUsers = MongoDatabase.getUsers();
+  //     });
+  //   }
+  // }
+
+  void _editUser(User user, int index) async {
     final updatedUser = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EditUserPage(user: user)),
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 300),
+        reverseTransitionDuration: const Duration(milliseconds: 300),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            EditUserPage(user: user),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // Slide in from right
+          final enter = Tween<Offset>(
+            begin: const Offset(1.0, 0.0),
+            end: Offset.zero,
+          ).animate(animation);
+
+          // Slide out to right when popping
+          final exit = Tween<Offset>(
+            begin: Offset.zero,
+            end: const Offset(1.0, 0.0),
+          ).animate(secondaryAnimation);
+
+          return SlideTransition(
+            position: enter,
+            child: SlideTransition(position: exit, child: child),
+          );
+        },
+      ),
     );
 
+    // Handle updated user if returned
     if (updatedUser != null && updatedUser is User) {
-      // 👇 Update MongoDB
-      await MongoDatabase.updateUser(updatedUser);
-
-      // 👇 Refresh UI
       setState(() {
         _futureUsers = MongoDatabase.getUsers();
       });
@@ -85,7 +123,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-FutureBuilder<List<User>> userList() {
+  FutureBuilder<List<User>> userList() {
     return FutureBuilder<List<User>>(
       future: _futureUsers,
       builder: (context, snapshot) {
@@ -128,61 +166,11 @@ FutureBuilder<List<User>> userList() {
               itemCount: users.length,
               itemBuilder: (context, index) {
                 final user = users[index];
-                return Slidable(
-                  key: ValueKey(user.email),
-                  // 👇 Swipe from right to left
-                  endActionPane: ActionPane(
-                    motion: const DrawerMotion(),
-                    children: [
-                      SlidableAction(
-                        onPressed: (context) => _editUser(user, index),
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        icon: Icons.edit,
-                        label: 'Edit',
-                      ),
-                      SlidableAction(
-                        onPressed: (context) async {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  DeleteUserPage(selectedUser: user),
-                            ),
-                          ).then((value) {
-                            if (value == true) {
-                              _refreshUsers();
-                            }
-                          });
-                        },
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        icon: Icons.delete,
-                        label: 'Delete',
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 35,
-                      backgroundImage:
-                          (user.imageUrl != null && user.imageUrl!.isNotEmpty)
-                          ? NetworkImage(user.imageUrl!)
-                          : const AssetImage('assets/images/id_male.jpg')
-                                as ImageProvider,
-                      backgroundColor: Colors.grey[200],
-                    ),
-                    title: Text(user.name),
-                    subtitle: Text(user.email),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text("Age: ${user.age}"),
-                        Text("Mobile: ${user.contactMobile}"),
-                      ],
-                    ),
-                  ),
+                return HomeItemView(
+                  user: user,
+                  index: index,
+                  refreshUsers: _refreshUsers,
+                  editUser: _editUser,
                 );
               },
             ),
@@ -193,5 +181,116 @@ FutureBuilder<List<User>> userList() {
   }
 }
 
+class HomeItemView extends StatelessWidget {
+  final User user;
+  final int index;
+  final Function refreshUsers;
+  final Function editUser;
 
+  const HomeItemView({
+    super.key,
+    required this.user,
+    required this.index,
+    required this.refreshUsers,
+    required this.editUser,
+  });
 
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Slidable(
+            key: ValueKey(user.email),
+            // 👇 Swipe from right to left
+            endActionPane: ActionPane(
+              motion: const DrawerMotion(),
+              children: [
+                SlidableAction(
+                  onPressed: (context) => editUser(user, index),
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  icon: Icons.edit,
+                  label: 'Edit',
+                ),
+                SlidableAction(
+                  onPressed: (context) async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DeleteUserPage(selectedUser: user),
+                      ),
+                    ).then((value) {
+                      if (value == true) {
+                        refreshUsers();
+                      }
+                    });
+                  },
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  icon: Icons.delete,
+                  label: 'Delete',
+                ),
+              ],
+            ),
+
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundImage: AssetImage('assets/images/id_male.jpg'),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      user.email,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(user.contactMobile, style: const TextStyle(fontSize: 14)),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset('assets/images/id_male.jpg', fit: BoxFit.cover),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.thumb_up_alt_outlined),
+              ),
+              const SizedBox(width: 4),
+              const Text("Like"),
+              const SizedBox(width: 24),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.comment_outlined),
+              ),
+              const SizedBox(width: 4),
+              const Text("Comment"),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
