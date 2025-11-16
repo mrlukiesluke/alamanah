@@ -1,0 +1,52 @@
+class User {
+  final String id;
+  final String name;
+  final String gender;
+  final String email;
+  final int age;
+  final String contactMobile;
+  final String? imageUrl; // optional profile picture
+
+  User({
+    required this.id,
+    required this.name,
+    required this.gender,
+    required this.email,
+    required this.age,
+    required this.contactMobile,
+    this.imageUrl,
+  });
+
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
+      id: map['_id'].toString(), // <-- convert ObjectId to string
+      name: map['name'] ?? '',
+      gender: map['gender'] ?? '',
+      email: map['email'] ?? '',
+      age: map['age'] ?? 0,
+      contactMobile: map['contact_mobile'] ?? '',
+      imageUrl: map['image_url'], // must match MongoDB field if exists
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      '_id': id,
+      'name': name,
+      'gender': gender,
+      'email': email,
+      'age': age,
+      'contact_mobile': contactMobile,
+      'image_url': imageUrl, // 👈 include it when saving
+    };
+  }
+}
+
+enum Gender {
+  male(sex: 'Male'),
+  female(sex: 'Female');
+
+  final String sex;
+
+  const Gender({required this.sex});
+}
