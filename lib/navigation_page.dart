@@ -2,6 +2,7 @@ import 'package:alamanah/l10n/app_localizations.dart';
 import 'package:alamanah/mobile_pages/home_page.dart';
 import 'package:alamanah/mobile_pages/language_switcher.dart';
 import 'package:alamanah/mobile_pages/profile_page.dart';
+import 'package:alamanah/mobile_pages/registration_page.dart';
 import 'package:flutter/material.dart';
 
 class NavigationPage extends StatefulWidget {
@@ -37,7 +38,7 @@ class _NavigationPageState extends State<NavigationPage> {
     final local = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Swipe Navigation'),
+        title: const Text('Al Amanah'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -54,6 +55,45 @@ class _NavigationPageState extends State<NavigationPage> {
           ),
         ],
       ),
+      // ✅ HAMBURGER MENU (LEFT)
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.green),
+              child: Text(
+                "Menu",
+                style: TextStyle(color: Colors.white, fontSize: 22),
+              ),
+            ),
+
+            // ➤ Registration page item
+            ListTile(
+              leading: const Icon(Icons.person_add),
+              title: const Text("Registration"),
+              onTap: () {
+                Navigator.pop(context); // close drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RegistrationPage()),
+                );
+              },
+            ),
+
+            // ➤ Example: Change language
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: const Text("Change Language"),
+              onTap: () {
+                Navigator.pop(context);
+                _showLanguageDialog();
+              },
+            ),
+          ],
+        ),
+      ),
+
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,
@@ -74,6 +114,8 @@ class _NavigationPageState extends State<NavigationPage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onNavTapped,
+        selectedItemColor: const Color.fromARGB(255, 3, 48, 13),
+        unselectedItemColor: Colors.grey,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: local.home),
           BottomNavigationBarItem(
@@ -86,6 +128,36 @@ class _NavigationPageState extends State<NavigationPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Select Language"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                onPressed: () {
+                  widget.onLocaleChange(const Locale('en'));
+                  Navigator.pop(context);
+                },
+                child: const Text("English"),
+              ),
+              TextButton(
+                onPressed: () {
+                  widget.onLocaleChange(const Locale('ar'));
+                  Navigator.pop(context);
+                },
+                child: const Text("Arabic"),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

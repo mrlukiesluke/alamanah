@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           // 🔹 Top Container with Search Box
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(8),
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search...',
@@ -197,46 +197,45 @@ class HomeItemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Slidable(
-            key: ValueKey(user.email),
-            // 👇 Swipe from right to left
-            endActionPane: ActionPane(
-              motion: const DrawerMotion(),
-              children: [
-                SlidableAction(
-                  onPressed: (context) => editUser(user, index),
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  icon: Icons.edit,
-                  label: 'Edit',
-                ),
-                SlidableAction(
-                  onPressed: (context) async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DeleteUserPage(selectedUser: user),
-                      ),
-                    ).then((value) {
-                      if (value == true) {
-                        refreshUsers();
-                      }
-                    });
-                  },
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  icon: Icons.delete,
-                  label: 'Delete',
-                ),
-              ],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Slidable(
+          key: ValueKey(user.email),
+          // 👇 Swipe from right to left
+          endActionPane: ActionPane(
+            motion: const DrawerMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (context) => editUser(user, index),
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                icon: Icons.edit,
+                label: 'Edit',
+              ),
+              SlidableAction(
+                onPressed: (context) async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DeleteUserPage(selectedUser: user),
+                    ),
+                  ).then((value) {
+                    if (value == true) {
+                      refreshUsers();
+                    }
+                  });
+                },
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                icon: Icons.delete,
+                label: 'Delete',
+              ),
+            ],
+          ),
 
+          child: Padding(
+            padding: EdgeInsetsGeometry.fromLTRB(12, 0, 12, 0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -264,33 +263,47 @@ class HomeItemView extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          Text(user.contactMobile, style: const TextStyle(fontSize: 14)),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset('assets/images/id_male.jpg', fit: BoxFit.cover),
-          ),
-          const SizedBox(height: 12),
-          Row(
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.thumb_up_alt_outlined),
+              Text(user.contactMobile, style: const TextStyle(fontSize: 14)),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'assets/images/id_male.jpg',
+                  fit: BoxFit.cover,
+                ),
               ),
-              const SizedBox(width: 4),
-              const Text("Like"),
-              const SizedBox(width: 24),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.comment_outlined),
+             
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.thumb_up_alt_outlined),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text("Like"),
+                  const SizedBox(width: 24),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.comment_outlined),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text("Comment"),
+                ],
               ),
-              const SizedBox(width: 4),
-              const Text("Comment"),
             ],
           ),
-        ],
-      ),
+        ),
+
+        // 🔹 Divider here
+        Divider(thickness: 2),
+      ],
     );
   }
 }

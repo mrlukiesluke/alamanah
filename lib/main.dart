@@ -1,4 +1,5 @@
 import 'package:alamanah/l10n/app_localizations.dart';
+import 'package:alamanah/mobile_pages/registration_page.dart';
 import 'package:alamanah/navigation_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -28,7 +29,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(
+        colorScheme: .fromSeed(seedColor: const Color.fromARGB(255, 4, 80, 11)),
+      ),
       debugShowCheckedModeBanner: false,
       locale: _locale,
       supportedLocales: const [Locale('en'), Locale('ar')],

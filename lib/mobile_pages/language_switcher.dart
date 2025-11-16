@@ -10,12 +10,11 @@ class LanguageSwitcher extends StatelessWidget {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(local.welcome)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(local.hello),
+            Text(local.welcome),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => onLocaleChange(const Locale('en')),
