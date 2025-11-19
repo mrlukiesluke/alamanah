@@ -20,3 +20,27 @@ samples, guidance on mobile development, and a full API reference.
 flutter pub get
 flutter gen-l10n
 
+## 🛠 Run command to update icons
+flutter pub run flutter_launcher_icons
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+
+
+

@@ -47,8 +47,10 @@ class _NavigationPageState extends State<NavigationPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      LanguageSwitcher(onLocaleChange: widget.onLocaleChange, navigationTabClick: false),
+                  builder: (context) => LanguageSwitcher(
+                    onLocaleChange: widget.onLocaleChange,
+                    navigationTabClick: false,
+                  ),
                 ),
               );
             },
@@ -61,9 +63,14 @@ class _NavigationPageState extends State<NavigationPage> {
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.green),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/app_bg.jpg"),
+                  fit: BoxFit.cover, // covers entire drawer header
+                ),
+              ),
               child: Text(
-                "Menu",
+                "",
                 style: TextStyle(color: Colors.white, fontSize: 22),
               ),
             ),
@@ -108,7 +115,10 @@ class _NavigationPageState extends State<NavigationPage> {
           // ),
           HomePage(),
           ProfilePage(),
-          LanguageSwitcher(onLocaleChange: widget.onLocaleChange, navigationTabClick: true),
+          LanguageSwitcher(
+            onLocaleChange: widget.onLocaleChange,
+            navigationTabClick: true,
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
