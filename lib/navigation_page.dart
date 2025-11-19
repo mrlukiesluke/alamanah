@@ -48,7 +48,7 @@ class _NavigationPageState extends State<NavigationPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      LanguageSwitcher(onLocaleChange: widget.onLocaleChange),
+                      LanguageSwitcher(onLocaleChange: widget.onLocaleChange, navigationTabClick: false),
                 ),
               );
             },
@@ -108,7 +108,7 @@ class _NavigationPageState extends State<NavigationPage> {
           // ),
           HomePage(),
           ProfilePage(),
-          LanguageSwitcher(onLocaleChange: widget.onLocaleChange),
+          LanguageSwitcher(onLocaleChange: widget.onLocaleChange, navigationTabClick: true),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
