@@ -36,10 +36,34 @@ class MongoDatabase {
   static Future<List<User>> getUsers() async {
     try {
       await connect();
-      final usersData = await _collection!.find().toList();
+      final usersData = await _collection!
+          .find(where.sortBy('_id', descending: true))
+          .toList();
       return usersData.map((doc) => User.fromMap(doc)).toList();
     } catch (e) {
       throw Exception("Failed to load users: $e");
+    }
+  }
+
+  static Future<bool> createUser(User user) async {
+    try {
+      await connect();
+
+      final result = await _collection!.insertOne({
+        'name': user.name,
+        'age': user.age,
+        'contact_mobile': user.contactMobile,
+        'email': user.email,
+        'gender': user.gender,
+        'nationality': 'Philippine',
+        'image_url': user.imageUrl,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      return result.isSuccess;
+    } catch (e) {
+      print("Failed to create user: $e");
+      throw Exception("Failed to create user: $e");
     }
   }
 
@@ -109,28 +133,4 @@ class MongoDatabase {
       throw Exception("Failed to delete user: $e");
     }
   }
-
-  // static connection() async {
-  //   var db = await Db.create(MONGO_URL);
-  //   await db.open();
-  //   inspect(db);
-
-  //   var collection = db.collection(COLLECTION_NAME);
-
-  //   // await collection.insertOne({
-  //   //   'name': 'Mario Garces',
-  //   //   'email': 'mario@yahoo.com',
-  //   //   'age': 30,
-  //   //   'contact_mobile': '898-456-7890',
-  //   // });
-
-  //   // await collection.update(
-  //   //   where.eq('name', 'Mr Lukies Luke'),
-  //   //   modify.set('age', 41),
-  //   // );
-
-  //   // await collection.deleteOne(where.eq('name', 'Mr Lukies Luke'));
-
-  //   print(await collection.find().toList());
-  // }
 }

@@ -42,23 +42,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // void _editUser(User user, int index) async {
-  //   final updatedUser = await Navigator.push(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => EditUserPage(user: user)),
-  //   );
-
-  //   if (updatedUser != null && updatedUser is User) {
-  //     // 👇 Update MongoDB
-  //     await MongoDatabase.updateUser(updatedUser);
-
-  //     // 👇 Refresh UI
-  //     setState(() {
-  //       _futureUsers = MongoDatabase.getUsers();
-  //     });
-  //   }
-  // }
-
   void _editUser(User user, int index) async {
     final updatedUser = await Navigator.push(
       context,

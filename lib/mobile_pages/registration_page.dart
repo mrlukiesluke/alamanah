@@ -1,8 +1,8 @@
+import 'package:alamanah/database/mongodb.dart';
 import 'package:alamanah/model/user';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -18,10 +18,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final _emailController = TextEditingController();
   final _mobileController = TextEditingController();
   final _ageController = TextEditingController();
+  late Gender _selectedGender;
 
-  String? _gender;
   File? _pickedImage;
   bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedGender = Gender.male;
+  }
 
   // pick image
   Future<void> _pickImage() async {
@@ -45,26 +51,47 @@ class _RegistrationPageState extends State<RegistrationPage> {
     User newUser = User(
       id: DateTime.now().millisecondsSinceEpoch.toString(), // temp ID
       name: _nameController.text.trim(),
-      gender: _gender!,
+      gender: _selectedGender.sex,
       email: _emailController.text.trim(),
       age: int.parse(_ageController.text.trim()),
       contactMobile: _mobileController.text.trim(),
       imageUrl: _pickedImage?.path, // or upload to server
     );
 
-    await Future.delayed(Duration(milliseconds: 300)); // simulate save
+    bool success = await MongoDatabase.createUser(newUser);
 
+    // ❗ async gap occurred here — must check mounted
     if (!mounted) return;
-    // Navigator.pop(context, newUser);
-    setState(() => _isSaving = false);
+
+    if (success) {
+      _isSaving = true;
+      setState(() => _isSaving = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Successfully ${newUser.name} registered.")),
+      );
+      _clearForm(); // <<< CLEAR THE FORM
+      return;
+    } else {
+      _isSaving = false;
+    }
+  }
+
+  void _clearForm() {
+    _nameController.clear();
+    _emailController.clear();
+    _mobileController.clear();
+    _ageController.clear();
+    _selectedGender = Gender.male;
+    _pickedImage = null;
+
+    setState(() {}); // refresh UI (circle avatar + dropdown)
   }
 
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: const BorderSide(color: Colors.grey, width: 1),
@@ -93,8 +120,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   onTap: _pickImage,
                   child: CircleAvatar(
                     radius: 45,
-                    backgroundImage:
-                        _pickedImage != null ? FileImage(_pickedImage!) : null,
+                    backgroundImage: _pickedImage != null
+                        ? FileImage(_pickedImage!)
+                        : null,
                     child: _pickedImage == null
                         ? const Icon(Icons.camera_alt, size: 32)
                         : null,
@@ -116,13 +144,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField(
-                        value: _gender,
+                        value: _selectedGender,
                         decoration: _inputDecoration('Gender'),
-                        items: ['Male', 'Female', 'Other']
-                            .map((g) =>
-                                DropdownMenuItem(value: g, child: Text(g)))
-                            .toList(),
-                        onChanged: (v) => _gender = v,
+                        items: Gender.values.map((g) {
+                          return DropdownMenuItem(value: g, child: Text(g.sex));
+                        }).toList(),
+                        onChanged: (v) => _selectedGender = v!,
                         validator: (v) =>
                             v == null ? 'Please select gender' : null,
                       ),
@@ -169,11 +196,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                     const SizedBox(width: 20),
                     ElevatedButton(
-                      onPressed: () => (),
+                      onPressed: () => Navigator.pop(context),
                       child: const Text('Cancel'),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),
