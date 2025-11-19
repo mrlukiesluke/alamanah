@@ -1,4 +1,4 @@
-package com.example.alamanah
+package com.alamanah.app
 
 import io.flutter.embedding.android.FlutterActivity
 
