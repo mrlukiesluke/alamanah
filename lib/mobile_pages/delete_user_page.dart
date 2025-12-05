@@ -1,5 +1,6 @@
 import 'package:alamanah/database/mongodb.dart';
 import 'package:alamanah/model/user';
+import 'package:alamanah/service/api_service.dart';
 import 'package:flutter/material.dart';
 
 class DeleteUserPage extends StatelessWidget {
@@ -9,8 +10,10 @@ class DeleteUserPage extends StatelessWidget {
 
   Future<void> _deleteUser(BuildContext context) async {
     try {
-      final result = await MongoDatabase.deleteUser(selectedUser.email);
-      if (result) {
+      // final result = await MongoDatabase.deleteUser(selectedUser.email);
+      final response = await ApiService.deleteUser(selectedUser.id);
+
+      if (response.success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${selectedUser.name} deleted successfully.')),
         );

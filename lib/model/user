@@ -40,6 +40,49 @@ class User {
       'image_url': imageUrl, // 👈 include it when saving
     };
   }
+
+  // ✅ fromJson factory
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['_id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      gender: json['gender'] ?? '',
+      email: json['email'] ?? '',
+      age: json['age'] is int ? json['age'] : int.tryParse(json['age'].toString()) ?? 0,
+      contactMobile: json['contactMobile'] ?? '',
+      imageUrl: json['imageUrl'], // nullable
+    );
+  }
+
+  // ✅ toJson (optional)
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'gender': gender,
+      'email': email,
+      'age': age,
+      'contactMobile': contactMobile,
+      'imageUrl': imageUrl,
+    };
+  }
+
+  Map<String, dynamic> toJsonId({bool includeId = true}) {
+    final data = {
+      "name": name,
+      "gender": gender,
+      "email": email,
+      "age": age,
+      "contactMobile": contactMobile,
+      "imageUrl": imageUrl,
+    };
+
+    if (includeId) {
+      data["_id"] = id;
+    }
+
+    return data;
+  }
 }
 
 enum Gender {

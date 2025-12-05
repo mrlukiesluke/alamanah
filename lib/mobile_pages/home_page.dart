@@ -2,6 +2,7 @@ import 'package:alamanah/database/mongodb.dart';
 import 'package:alamanah/mobile_pages/delete_user_page.dart';
 import 'package:alamanah/mobile_pages/edit_user_page.dart';
 import 'package:alamanah/model/user';
+import 'package:alamanah/service/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -13,14 +14,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<List<User>> _futureUsers;
+  // late Future<List<User>> _futureUsers;
+  late Future<List<User>> futureUsers;
+
   String searchQuery = '';
   List<User> users = [];
 
   @override
   void initState() {
     super.initState();
-    _futureUsers = MongoDatabase.getUsers();
+    // _futureUsers = MongoDatabase.getUsers();
+    futureUsers = ApiService.getUsers();
     print('initState user_pro;');
   }
 
@@ -29,16 +33,18 @@ class _HomePageState extends State<HomePage> {
       searchQuery = value;
       // Update the future to the search results
       if (searchQuery.isEmpty) {
-        _futureUsers = MongoDatabase.getUsers();
+        // _futureUsers = MongoDatabase.getUsers();
+        futureUsers = ApiService.getUsers();
       } else {
-        _futureUsers = MongoDatabase.searchUsers(searchQuery);
+        // _futureUsers = MongoDatabase.searchUsers(searchQuery);
       }
     });
   }
 
   Future<void> _refreshUsers() async {
     setState(() {
-      _futureUsers = MongoDatabase.getUsers();
+      // _futureUsers = MongoDatabase.getUsers();
+      futureUsers = ApiService.getUsers();
     });
   }
 
@@ -74,7 +80,7 @@ class _HomePageState extends State<HomePage> {
     // Handle updated user if returned
     if (updatedUser != null && updatedUser is User) {
       setState(() {
-        _futureUsers = MongoDatabase.getUsers();
+        // _futureUsers = MongoDatabase.getUsers();
       });
     }
   }
@@ -108,7 +114,7 @@ class _HomePageState extends State<HomePage> {
 
   FutureBuilder<List<User>> userList() {
     return FutureBuilder<List<User>>(
-      future: _futureUsers,
+      future: futureUsers,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -262,7 +268,7 @@ class HomeItemView extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-             
+
               Row(
                 children: [
                   IconButton(

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:alamanah/database/mongodb.dart';
 import 'package:alamanah/model/user';
+import 'package:alamanah/service/api_service.dart';
 import 'package:flutter/material.dart';
 
 class EditUserPage extends StatefulWidget {
@@ -72,9 +73,17 @@ class _EditUserPageState extends State<EditUserPage> {
     );
 
     try {
-      bool success = await MongoDatabase.updateUser(updatedUser);
+      final response = await ApiService.updateUser(updatedUser.id, updatedUser);
 
-      if (success) {
+      if (response.success) {
+        print(response.message);
+      } else {
+        print("Update failed: ${response.message}");
+      }
+
+      // bool success = await MongoDatabase.updateUser(updatedUser);
+
+      if (response.success) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('✅ User updated successfully'),
@@ -84,9 +93,10 @@ class _EditUserPageState extends State<EditUserPage> {
         );
         Navigator.pop(context, updatedUser); // return updated user
       } else {
+        print("Update failed: ${response.message}");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('⚠️ No matching user found to update'),
+            content: Text('⚠️ No matching user found to update:'),
             backgroundColor: Colors.orange,
             duration: Duration(seconds: 2),
           ),
