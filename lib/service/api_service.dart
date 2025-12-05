@@ -59,7 +59,6 @@ class ApiService {
       if (res.statusCode == 200) {
         return ApiResponse(success: true, message: "User updated successfully");
       } else {
-        print("ERROR DELTE: ${res.body}");
         return ApiResponse(
           success: false,
           message: "Failed to update user: ${res.body}",

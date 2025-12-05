@@ -3,6 +3,7 @@ import 'package:alamanah/mobile_pages/delete_user_page.dart';
 import 'package:alamanah/mobile_pages/edit_user_page.dart';
 import 'package:alamanah/model/user';
 import 'package:alamanah/service/api_service.dart';
+import 'package:alamanah/utills/utillities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -214,6 +215,9 @@ class HomeItemView extends StatelessWidget {
                       refreshUsers();
                     }
                   });
+
+                  await Utillities.showSavedUsername(context);
+
                 },
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
